@@ -3,7 +3,7 @@ import deepcopy from 'deepcopy';
 // this is the hash key. If two strings have the same
 // return value of this function, they are assumed to
 // be anagrams
-const toSortedWord = (word: string): string =>
+export const toSortedWord = (word: string): string =>
 	word.toLowerCase().split("").sort().join("");
 
 // This is an object where the key is the result of the
