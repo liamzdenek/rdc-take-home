@@ -28,11 +28,12 @@
     "lint": "eslint . --ext .ts,.tsx",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
-	"dev": "nodemon -w ./src -e ts --exec \"npm run build && node build/src/main.js ../dictionary.txt\""
+    "dev": "nodemon -w ./src -e ts --exec \"npm run build && node build/src/main.js ../dictionary.txt\""
   },
   "author": "Jakub Synowiec <github@jakubsynowiec.info>",
   "license": "Apache-2.0",
   "dependencies": {
+    "deepcopy": "^2.1.0",
     "tslib": "~2.0.0"
   },
   "volta": {
