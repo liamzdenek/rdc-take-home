@@ -2,9 +2,18 @@ import {AnagramFinderContext} from './AnagramFinderContext';
 import {getAnagramsFromFile} from './getAnagramsFromFile';
 import readline from 'readline';
 import colors from 'colors';
+import stream from 'stream';
+
+interface ShellContext {
+	shell: readline.Interface,
+	input: stream.Readable,
+	output: stream.Writable,
+	anagramCtx: AnagramFinderContext,
+	argv: string[]
+}
 
 interface CommandTable {
-	[k: string]: (ctx: AnagramFinderContext, shell: readline.Interface, argv: string[]) => Promise<void>;
+	[k: string]: (ctx: ShellContext) => Promise<void>;
 }
 
 // TODO: would be cleaner to move this to other files
@@ -15,24 +24,26 @@ const commands: CommandTable = {
 	// commands to all be lowercase, like a typical
 	// bash shell
 
-	"addfile": async (ctx: AnagramFinderContext, shell: readline.Interface, argv: string[]): Promise<void> => {
-		if(argv.length !== 1) {
-			shell.write(colors.red(`\`addfile\` expects exactly 1 argument: a file relative to cwd`));
+	"addfile": async ctx => {
+		if(ctx.argv.length !== 2) {
+			console.log(colors.red(`\`addfile\` expects exactly 1 argument: a file relative to cwd`));
 		}
 
-		await getAnagramsFromFile(argv[0], ctx);
+		await getAnagramsFromFile(ctx.argv[1], ctx.anagramCtx);
 	},
 
-	"printresults": async (ctx: AnagramFinderContext, shell: readline.Interface, argv: string[]): Promise<void> => {
-		if(argv.length !== 0) {
-			shell.write(colors.red(`\`printresults\` expects zero arguments`));
+	"printresults": async ctx => {
+		if(ctx.argv.length !== 0) {
+			console.log(colors.red(`\`printresults\` expects zero arguments`));
 		}
 
-		const results = ctx.getResults();
+		const results = ctx.anagramCtx.getResults();
 
-		for(let result of Object.values(results)) {
-			shell.write("\t"+colorEachWord([...result.keys()]).join(" "));
+		const values = Object.values(results);
+		for(let result of values) {
+			console.log("\t"+colorEachWord([...result.keys()]).join(" "));
 		}
+		console.log(colors.underline(`${values.length} results`));
 	}
 }
 
@@ -44,12 +55,10 @@ const colorEachWord = (words: string[]) => {
 	)
 }
 
-const runCommand = async (
-	ctx: AnagramFinderContext,
-	shell: readline.Interface,
-	argv: string[]
-): Promise<void> => {
+const runCommand = async (ctx: ShellContext, argv: string[]): Promise<void> => {
 	try {
+		ctx.argv = argv;
+
 		if(argv.length === 0) {
 			return; // give the user a new prompt
 		}
@@ -60,37 +69,50 @@ const runCommand = async (
 		if(!command) {
 			// TODO: add fuzzaldrin-plus to recommend a
 			// "did you mean X"
-			shell.write(colors.red(`No such command "${commandName}"`));
+			console.log(colors.red(`No such command "${commandName}"`));
 			return;
 		}
 
-		command(ctx, shell, argv.slice(1));
+		command(ctx);
 	} catch(e) {
-		shell.write(colors.red(`Caught exception while trying to process command "${argv}": ${e}\n`)+e.stack+"\n");
+		console.log(colors.red(`Caught exception while trying to process command "${argv}": ${e}\n`)+e.stack+"\n");
 	}
 };
 
 // util.promisify doesn't work on this method -- i think lack of an error field is causing typescript to break
 const promisifyQuestion = (rl: readline.Interface) => (questionText: string): Promise<string> => new Promise(resolve => rl.question(questionText, resolve))
 
-export async function anagramShell(seedFilename: string): Promise<void> {
-	const ctx = new AnagramFinderContext();
+function initShellContext(): ShellContext {
+	const input = process.stdin;
+	const output = process.stdout;
+	
+	const ctx: ShellContext = {
+		anagramCtx: new AnagramFinderContext(),
+		shell: readline.createInterface({
+			input: process.stdin,
+			output: process.stdout
+		}),
+		input,
+		output,
+		argv: null
+	};
 
-	const shell = readline.createInterface({
-		input: process.stdin,
-		output: process.stdout
-	});
+	return ctx;
+}
+
+export async function anagramShell(seedFilename: string): Promise<void> {
+	const ctx = initShellContext();
 
 	if(seedFilename) {
-		runCommand(ctx, shell, ["addfile", seedFilename]);
+		runCommand(ctx, ["addfile", seedFilename]);
 	}
 	
-	const question = promisifyQuestion(shell);
+	const question = promisifyQuestion(ctx.shell);
 
 	// TODO: improve this by migrating session into an app context object, so we don't have to rely on process.exit() or ^C to termiante
 	while(true) {
 		const arg_string = await question("> ");
 		const argv = arg_string.split(" ");
-		console.log('argv', argv);
+		await runCommand(ctx, argv);
 	}
 }
