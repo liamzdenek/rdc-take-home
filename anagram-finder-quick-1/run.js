@@ -1,6 +1,7 @@
 const fs = require('fs');
 
 // i ran this with node 12, but it should work on earlier versions
+// usage: `node run.js ./dictionary.txt`
 
 const file = fs.readFileSync(process.argv[2]).toString('utf8');
 
