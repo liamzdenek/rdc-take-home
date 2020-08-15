@@ -12,7 +12,7 @@ let result = new Set();
 
 file
 	.split("\n")
-	.map(word => word.split("").sort().join("").toLowerCase()) // not sure how this works on multibyte chars (emoji, chinese)
+	.map(word => word.toLowerCase().split("").sort().join("")) // not sure how this works on multibyte chars (emoji, chinese)
 	.forEach(word => {
 		//console.log('sorted word', word);
 		if(history.has(word)) {
