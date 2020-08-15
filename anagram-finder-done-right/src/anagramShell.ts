@@ -33,7 +33,7 @@ const commands: CommandTable = {
 	},
 
 	"printresults": async ctx => {
-		if(ctx.argv.length !== 0) {
+		if(ctx.argv.length !== 1) {
 			console.log(colors.red(`\`printresults\` expects zero arguments`));
 		}
 
@@ -44,11 +44,17 @@ const commands: CommandTable = {
 			console.log("\t"+colorEachWord([...result.keys()]).join(" "));
 		}
 		console.log(colors.underline(`${values.length} results`));
+	},
+
+	"help": async _ctx => {
+		console.log("Try these commands: ");
+
+		console.log("\t"+colorEachWord(Object.keys(commands)).join(" "));
 	}
 }
 
 const colorEachWord = (words: string[]) => {
-	const colorFunctions = [colors.green, colors.blue, colors.magenta];
+	const colorFunctions = [colors.green, colors.blue, colors.magenta, colors.yellow];
 
 	return words.map((value, index) =>
 		colorFunctions[index % colorFunctions.length](value)
