@@ -31,6 +31,11 @@ export class AnagramFinderContext {
 		return returnValue;
 	}
 
+	getAnagramsOfWord(word: string): Set<string> {
+		const sortedWord = this.sortFunction(word);
+		return deepcopy(this.anagramHashTable[sortedWord])
+	}
+
 	putWord(word: string): void {
 		this._putWord(this.sortFunction(word), word);
 	}

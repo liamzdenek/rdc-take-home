@@ -43,11 +43,34 @@ const commands: CommandTable = {
 
 		const results = ctx.anagramCtx.getResults();
 
-		const values = Object.values(results);
-		for(let result of values) {
+		const resultsArray = Object.values(results);
+		for(let result of resultsArray) {
 			ctx.log("\t"+colorEachWord([...result.keys()]).join(" "));
 		}
-		ctx.log(colors.underline(`${values.length} results`));
+		ctx.log(colors.underline(`${resultsArray.length} results`));
+	},
+
+	"get": async ctx => {
+		if(ctx.argv.length !== 2) {
+			ctx.log(colors.red(`\`get\` expects exactly 1 argument: a word to look for anagrams of`));
+			return;
+		}
+		const anagrams = ctx.anagramCtx.getAnagramsOfWord(ctx.argv[1]);
+
+		if(!anagrams) {
+			ctx.log(colors.red(`No such word: "${ctx.argv[1]}"`));
+			return;
+		}
+
+		ctx.log("\t"+colorEachWord([...anagrams.keys()]).join(" "));
+	},
+
+	"put": async ctx => {
+		if(ctx.argv.length !== 2) {
+			ctx.log(colors.red(`\`put\` expects exactly 1 argument: a word to create`));
+			return;
+		}
+		ctx.anagramCtx.putWord(ctx.argv[1]);
 	},
 
 	"help": async ctx => {
