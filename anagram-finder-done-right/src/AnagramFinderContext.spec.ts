@@ -27,11 +27,17 @@ describe('AnagramFinderContext', () => {
 
 		expect(ctx.putAndCheckWord(WORD_DIFFERENT_CASE)).toBe(true);
 	});
+	
+	it('should store words of differing case as separate words that match the anagram', () => {
+		ctx.putWord(WORD);
+		ctx.putWord(WORD_DIFFERENT_CASE);
+		expect([...ctx.getAnagramsOfWord(WORD).values()]).toEqual([WORD, WORD_DIFFERENT_CASE]);
+	});
 
 	it('should not return words that are seen only once from getResults()', () => {
 		ctx.putWord(WORD);
 
-		expect(Object.entries(ctx.getResults()).length).toBe(0);
+		expect(Object.entries(ctx.getResults())).toEqual([]);
 	});
 
 	it('should return words that are seen at least once from getResults()', () => {
@@ -51,6 +57,21 @@ describe('AnagramFinderContext', () => {
 
 		const results = ctx.getResults();
 		expect([...results[toSortedWord(WORD_MULTIBYTE)]]).toEqual([WORD_MULTIBYTE]);
+	});
+
+	it('should store words with putWord', () => {
+		ctx.putWord(WORD);
+		expect([...ctx.getAnagramsOfWord(WORD)]).toEqual([WORD]);
+	});
+
+	it('should show the number of unique anagram keys stored', () => {
+		expect(ctx.size()).toBe(0);
+		ctx.putWord(WORD);
+		expect(ctx.size()).toBe(1);
+		ctx.putWord(WORD_DIFFERENT_CASE);
+		expect(ctx.size()).toBe(1);
+		ctx.putWord(WORD_MULTIBYTE);
+		expect(ctx.size()).toBe(2);
 	});
 
 });
