@@ -35,6 +35,10 @@ export class AnagramFinderContext {
 		this._putWord(this.sortFunction(word), word);
 	}
 
+	size(): number {
+		return Object.keys(this.anagramHashTable).length;
+	}
+
 	private _putWord(sortedWord: string, word: string): void {
 		if(!this.anagramHashTable[sortedWord]) {
 			// if the sortedWord key has not been seen before, this cannot possibly be the second word, so there is no need to update the Results hashtable
@@ -53,8 +57,7 @@ export class AnagramFinderContext {
 	}
 
 	// either make this object immutable (deepfreeze),
-	// or return a copy. hard to say which
-	// is best generally without a use case. I chose
+	// or return a copy. I chose
 	// deepcopy because it supports more use cases by
 	// allowing the client to continue to use the
 	// AnagramFinderContext, although it has a much

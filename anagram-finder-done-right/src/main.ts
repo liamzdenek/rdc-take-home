@@ -1,12 +1,9 @@
-import {getAnagramsFromFile} from './getAnagramsFromFile';
+import {anagramShell} from './anagramShell';
 
 async function main(): Promise<void> {
-	const anagrams = await getAnagramsFromFile(process.argv[2]);
-
-	for(let wordList of Object.values(anagrams)) {
-		console.log([...wordList.values()].join(','));
-		// can improve performance by calling console.log once with a prepared string
-	}
+	await anagramShell(process.argv[2]);
+	console.log('bye!');
+	process.exit(0);
 }
 
 main().catch(e => {
