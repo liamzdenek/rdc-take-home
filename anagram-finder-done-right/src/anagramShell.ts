@@ -10,6 +10,8 @@ interface ShellContext {
 	output: stream.Writable,
 	anagramCtx: AnagramFinderContext,
 	argv: string[]
+	log: typeof console.log,
+	shouldExit: boolean
 }
 
 interface CommandTable {
@@ -26,30 +28,36 @@ const commands: CommandTable = {
 
 	"addfile": async ctx => {
 		if(ctx.argv.length !== 2) {
-			console.log(colors.red(`\`addfile\` expects exactly 1 argument: a file relative to cwd`));
+			ctx.log(colors.red(`\`addfile\` expects exactly 1 argument: a file relative to cwd`));
 		}
 
 		await getAnagramsFromFile(ctx.argv[1], ctx.anagramCtx);
+
+		ctx.log(colors.green(`The context now contains ${ctx.anagramCtx.size()} anagram identifiers`));
 	},
 
 	"printresults": async ctx => {
 		if(ctx.argv.length !== 1) {
-			console.log(colors.red(`\`printresults\` expects zero arguments`));
+			ctx.log(colors.red(`\`printresults\` expects zero arguments`));
 		}
 
 		const results = ctx.anagramCtx.getResults();
 
 		const values = Object.values(results);
 		for(let result of values) {
-			console.log("\t"+colorEachWord([...result.keys()]).join(" "));
+			ctx.log("\t"+colorEachWord([...result.keys()]).join(" "));
 		}
-		console.log(colors.underline(`${values.length} results`));
+		ctx.log(colors.underline(`${values.length} results`));
 	},
 
-	"help": async _ctx => {
-		console.log("Try these commands: ");
+	"help": async ctx => {
+		ctx.log("Try these commands: ");
 
-		console.log("\t"+colorEachWord(Object.keys(commands)).join(" "));
+		ctx.log("\t"+colorEachWord(Object.keys(commands)).join(" "));
+	},
+
+	"exit": async ctx => {
+		ctx.shouldExit = true;
 	}
 }
 
@@ -65,7 +73,7 @@ const runCommand = async (ctx: ShellContext, argv: string[]): Promise<void> => {
 	try {
 		ctx.argv = argv;
 
-		if(argv.length === 0) {
+		if(argv.length === 0 || (argv.length === 1 && argv[0] === "")) {
 			return; // give the user a new prompt
 		}
 
@@ -75,13 +83,13 @@ const runCommand = async (ctx: ShellContext, argv: string[]): Promise<void> => {
 		if(!command) {
 			// TODO: add fuzzaldrin-plus to recommend a
 			// "did you mean X"
-			console.log(colors.red(`No such command "${commandName}"`));
+			ctx.log(colors.red(`No such command "${commandName}"`));
 			return;
 		}
 
-		command(ctx);
+		await command(ctx);
 	} catch(e) {
-		console.log(colors.red(`Caught exception while trying to process command "${argv}": ${e}\n`)+e.stack+"\n");
+		ctx.log(colors.red(`Caught exception while trying to process command "${argv}": ${e}\n`)+e.stack+"\n");
 	}
 };
 
@@ -95,12 +103,14 @@ function initShellContext(): ShellContext {
 	const ctx: ShellContext = {
 		anagramCtx: new AnagramFinderContext(),
 		shell: readline.createInterface({
-			input: process.stdin,
-			output: process.stdout
+			input,
+			output
 		}),
 		input,
 		output,
-		argv: null
+		argv: null,
+		shouldExit: false,
+		log: console.log // TODO: hook this up to output. ran into some problems using output.write() for this, not a high priority fix
 	};
 
 	return ctx;
@@ -110,13 +120,12 @@ export async function anagramShell(seedFilename: string): Promise<void> {
 	const ctx = initShellContext();
 
 	if(seedFilename) {
-		runCommand(ctx, ["addfile", seedFilename]);
+		await runCommand(ctx, ["addfile", seedFilename]);
 	}
 	
 	const question = promisifyQuestion(ctx.shell);
 
-	// TODO: improve this by migrating session into an app context object, so we don't have to rely on process.exit() or ^C to termiante
-	while(true) {
+	while(!ctx.shouldExit) {
 		const arg_string = await question("> ");
 		const argv = arg_string.split(" ");
 		await runCommand(ctx, argv);
