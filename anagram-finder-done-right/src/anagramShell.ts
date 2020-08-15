@@ -110,7 +110,12 @@ const runCommand = async (ctx: ShellContext, argv: string[]): Promise<void> => {
 			return;
 		}
 
+		const startTime = new Date();
 		await command(ctx);
+		const endTime = new Date();
+
+		const ms = endTime.getTime() - startTime.getTime();
+		ctx.log(colors.underline(colors.grey(`Executed command "${ctx.argv[0]}" in ${ms}ms`)));
 	} catch(e) {
 		ctx.log(colors.red(`Caught exception while trying to process command "${argv}": ${e}\n`)+e.stack+"\n");
 	}
