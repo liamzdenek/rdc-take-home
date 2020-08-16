@@ -1,7 +1,9 @@
 import React from 'react';
 import {createUseStyles} from 'react-jss';
-import logo from './realtor-com.png';
 import {Link} from 'react-router-dom';
+import {useSelector} from 'react-redux';
+import {getSiteData, getUserData} from '../store/modules/data';
+import {Loading} from '../Components/Loading';
 
 const useStyles = createUseStyles({
 	header: {
@@ -28,21 +30,31 @@ const useStyles = createUseStyles({
 
 export const Navbar: React.FunctionComponent<{}> = () => {
 	const classes = useStyles();
+	const siteData = useSelector(getSiteData);
+	const userData = useSelector(getUserData);
 
 	return (
 		<header className={classes.header}>
 			<div className={classes.logo}>
-				<Link to="/">
-					<img src={logo} alt="Realtor.com logo"/>
-				</Link>
+				{siteData?.logoImage ? (
+					<Link to="/">
+						<img src={siteData.logoImage} alt="Move logo"/>
+					</Link>
+				) : (
+					<Loading/>
+				)}
 			</div>
 			<span className={classes.title}>
-				Earthquake Zen Garden
+				{siteData?.title ? siteData.title : <Loading/>}
 			</span>
 			<div className={classes.userLink}>
-				<Link to="/user/sally">
-					Welcome, Sally
-				</Link>
+				{userData?.firstName ? (
+					<Link to="/profile">
+						Welcome, {userData.firstName}
+					</Link>
+				) : (
+					<Loading/>
+				)}
 			</div>
 		</header>
 	);

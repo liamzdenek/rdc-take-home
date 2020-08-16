@@ -7,7 +7,7 @@ import {PageWelcome} from './pages/PageWelcome';
 export const Routes: React.FunctionComponent<{}> = () => {
 	return (
 		<Switch>
-			<Route path="/welcome/:userId">
+			<Route path="/welcome">
 
 				<PageWelcome/>
 			</Route>

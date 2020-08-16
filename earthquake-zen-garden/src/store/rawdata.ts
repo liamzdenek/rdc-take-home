@@ -16,7 +16,7 @@ export const data = {
   "site": {
     "title": "Earthquake Zen Garden",
     "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Arenal_Volcano_07_2015_CRI_3828.jpg/1920px-Arenal_Volcano_07_2015_CRI_3828.jpg",
-    "logoImage": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Realtor-com_logo.png"
+	"logoImage": "https://upload.wikimedia.org/wikipedia/en/thumb/b/b9/Move_logo.svg/1280px-Move_logo.svg.png"
   },
   "profile": {
     "firstName": "Sally",
