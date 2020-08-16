@@ -13,7 +13,7 @@ const useStyles = createUseStyles({
 	logo: {
 		flex: "0 0 auto",
 		maxWidth: "50px",
-		"& >img": {
+		"& img": {
 			maxHeight: "100%"
 		}
 	},
@@ -32,7 +32,9 @@ export const Navbar: React.FunctionComponent<{}> = () => {
 	return (
 		<header className={classes.header}>
 			<div className={classes.logo}>
-				<img src={logo} alt="Realtor.com logo"/>
+				<Link to="/">
+					<img src={logo} alt="Realtor.com logo"/>
+				</Link>
 			</div>
 			<span className={classes.title}>
 				Earthquake Zen Garden
