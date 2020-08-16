@@ -7,7 +7,11 @@ const useStyles = createUseStyles({
 		
 		display: "flex",
 		flexDirection: "column",
-		justifyContent: "center"
+		justifyContent: "center",
+		alignItems: "center",
+		"& h1,h2,h3,h4,h5,h6": {
+			textAlign: "center"
+		}
 	}
 });
 

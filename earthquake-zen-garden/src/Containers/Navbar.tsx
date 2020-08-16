@@ -9,14 +9,14 @@ const useStyles = createUseStyles({
 	header: {
 		backgroundColor: "#ddd",
 		padding: "10px",
-		display: "flex",
 		maxHeight: "50px",
+		display: "flex",
+		alignItems: "center"
 	},
 	logo: {
 		flex: "0 0 auto",
-		maxWidth: "50px",
 		"& img": {
-			maxHeight: "100%"
+			maxHeight: "50px"
 		}
 	},
 	title: {
