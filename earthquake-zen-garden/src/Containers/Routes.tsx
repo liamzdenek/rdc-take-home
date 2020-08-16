@@ -8,10 +8,9 @@ export const Routes: React.FunctionComponent<{}> = () => {
 	return (
 		<Switch>
 			<Route path="/welcome">
-
 				<PageWelcome/>
 			</Route>
-			<Route path="/earthquake/:quakeId">
+			<Route path="/earthquake/:earthquakeIds">
 				<PageEarthquake/>
 			</Route>
 			<Route path="/">

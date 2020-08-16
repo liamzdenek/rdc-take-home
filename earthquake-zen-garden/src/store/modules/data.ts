@@ -19,7 +19,7 @@ export function dataReducer(state = initialState, action: DataActionTypes) {
 	if(action.type === TYPES.PUT_DATA) {
 		return {
 			...state,
-			rawData: action.data
+			rawData: action.data,
 		};
 	}
 	return state;
@@ -37,3 +37,4 @@ export const getSiteData = (state: RootState) => getDataReducer(state)?.rawData?
 export const getUserData = (state: RootState) => getDataReducer(state)?.rawData?.profile;
 export const getEarthquakeMetadata = (state: RootState) => getDataReducer(state)?.rawData?.data.metadata;
 export const getEarthquakeData = (state: RootState) => getDataReducer(state)?.rawData?.data.features;
+export const getEarthquakeDataByIds = (ids: string) => (state: RootState) => getDataReducer(state)?.rawData?.data.features.find(feature => feature.properties.ids === ids);
