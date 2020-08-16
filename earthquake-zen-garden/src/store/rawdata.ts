@@ -1,3 +1,17 @@
+export interface RawData {
+	site: typeof data.site,
+	profile: typeof data.profile,
+	data: RawDataCollection
+}
+
+export interface RawDataCollection {
+	type: string,
+	metadata: typeof data.data.metadata,
+	features: RawDataFeature[]
+}
+
+export type RawDataFeature = typeof data.data.features[0];
+
 export const data = {
   "site": {
     "title": "Earthquake Zen Garden",
