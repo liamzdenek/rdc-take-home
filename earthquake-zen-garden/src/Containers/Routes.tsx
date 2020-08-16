@@ -2,13 +2,13 @@ import React from 'react';
 import {Switch, Route} from 'react-router-dom';
 import {PageHome} from './pages/PageHome';
 import {PageEarthquake} from './pages/PageEarthquake';
-import {PageWelcome} from './pages/PageWelcome';
+import {PageProfile} from './pages/PageProfile';
 
 export const Routes: React.FunctionComponent<{}> = () => {
 	return (
 		<Switch>
 			<Route path="/profile">
-				<PageWelcome/>
+				<PageProfile/>
 			</Route>
 			<Route path="/earthquake/:earthquakeIds">
 				<PageEarthquake/>

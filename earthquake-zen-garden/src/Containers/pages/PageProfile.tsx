@@ -24,7 +24,7 @@ const useStyles = createUseStyles({
 	}
 });
 
-export const PageWelcome: React.FunctionComponent<{}> = () => {
+export const PageProfile: React.FunctionComponent<{}> = () => {
 	const classes = useStyles();
 	const userData = useSelector(getUserData);
 
