@@ -1,6 +1,5 @@
 import React from 'react';
 import {Loading} from './Loading';
-import {Link} from 'react-router-dom';
 import {createUseStyles} from 'react-jss';
 
 const useStyles = createUseStyles({
@@ -29,7 +28,9 @@ export const TwoColumnTable: React.FunctionComponent<TwoColumnTableProps> = (pro
 						<td className={classes.label}>
 							{k}
 						</td>
-						<td>{v}</td>
+						<td>
+							{v ? v : <Loading/>}
+						</td>
 					</tr>
 				))}
 			</tbody>
